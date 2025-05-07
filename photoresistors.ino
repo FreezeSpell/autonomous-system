@@ -8,8 +8,10 @@ const int photoRight = A2;
 
 const int sonar = A3;
 
-int wheelLeft = 9;
-int wheelRight = 10;
+int wheelLeftF = 7;
+int wheelLeftR = 6;
+int wheelRightF = 5;
+int wheelRightR = 4;
 
 int sprayServo = 11;
 
@@ -41,6 +43,48 @@ int minimumFireValue = 50; // Minimum value that a photoresistor needs before it
 
 // END PARAMETERS //
 
+void turnLeft() {
+    digitalWrite(wheelLeftF, LOW);
+    digitalWrite(wheelLeftR, HIGH);
+    digitalWrite(wheelRightR, LOW);
+    digitalWrite(wheelRightF, HIGH);
+}
+
+void turnRight() {
+    digitalWrite(wheelLeftF, HIGH);
+    digitalWrite(wheelLeftR, LOW);
+    digitalWrite(wheelRightR, HIGH);
+    digitalWrite(wheelRightF, LOW);
+}
+
+void forwardDrive() {
+    digitalWrite(wheelLeftF, HIGH);
+    digitalWrite(wheelRightF, HIGH);
+    digitalWrite(wheelLeftR, LOW);
+    digitalWrite(wheelRightR, LOW);
+}
+
+void reverseDrive() {
+    digitalWrite(wheelLeftF, LOW);
+    digitalWrite(wheelRightF, LOW);
+    digitalWrite(wheelLeftR, HIGH);
+    digitalWrite(wheelRightR, HIGH);
+}
+
+void allStop() {
+    digitalWrite(wheelLeftF, LOW);
+    digitalWrite(wheelRightF, LOW);
+    digitalWrite(wheelLeftR, LOW);
+    digitalWrite(wheelRightR, LOW);
+}
+
+void allBrake() {
+    digitalWrite(wheelLeftF, HIGH);
+    digitalWrite(wheelRightF, HIGH);
+    digitalWrite(wheelLeftR, HIGH);
+    digitalWrite(wheelRightR, HIGH);
+}
+
 void setup() {
     // Pin declarations for sensors
     pinMode(photoLeft, INPUT);
@@ -50,8 +94,10 @@ void setup() {
     pinMode(sonar, INPUT);
     
     // Pin declarations for servos
-    pinMode(wheelLeft, OUTPUT);
-    pinMode(wheelRight, OUTPUT);
+    pinMode(wheelLeftF, OUTPUT);
+    pinMode(wheelLeftR, OUTPUT);
+    pinMode(wheelRightF, OUTPUT);
+    pinMode(wheelRightR, OUTPUT);
     
     pinMode(sprayServo, OUTPUT);
     
@@ -91,17 +137,17 @@ void loop() {
     // Pathfinding code
     if (fireFound and not maxDistanceReached and not sourceCentered) {
         while (valueLeft > valueFront) {
-            digitalWrite(wheelRight, HIGH);
+            turnLeft();
             delay(200);
-            digitalWrite(wheelRight, LOW);
+            allStop();
             valueLeft = analogRead(photoLeft);
             valueFront = analogRead(photoFront);
         }
 
         while (valueRight > valueFront) {
-            digitalWrite(wheelLeft, HIGH);
+            turnRight();
             delay(200);
-            digitalWrite(wheelLeft, LOW);
+            allStop();
             valueRight = analogRead(photoRight);
             valueFront = analogRead(photoFront);
         }
@@ -111,49 +157,26 @@ void loop() {
         if (sourceCentered and frontLargest) {
 
         } else if (valueLeft > valueRight) {
-            digitalWrite(wheelRight, HIGH);
-            digitalWrite(wheelLeft, LOW);
+            turnLeft();
             delay(200);
-            digitalWrite(wheelRight, LOW);
+            allStop();
         } else if (valueRight > valueLeft) {
-            digitalWrite(wheelRight, LOW);
-            digitalWrite(wheelLeft, HIGH);
+            turnRight();
             delay(200);
-            digitalWrite(wheelLeft, LOW);
+            allStop();
         } 
     }
     // End pathfinding code
 
     // Searching loop: only gets executed if all other checks fail, therefore means only searches if no fire that satisfies the conditions is found
     while (not fireFound) {
-        digitalWrite(wheelLeft, LOW);
-        digitalWrite(wheelRight, LOW);
+        allStop();
 
-        for (int i = 0; i < 10; i++) {
-            digitalWrite(wheelRight, HIGH);
-            delay(200);
-            digitalWrite(wheelRight, LOW);
-            fireFound = (valueLeft > minimumFireValue or valueRight > minimumFireValue or valueFront > minimumFireValue);
+        turnLeft();
 
-            if (fireFound) {
-                break;
-            }
-        }
+        delay(200);
 
-        if (fireFound) {
-            return;
-        }
-
-        for (int i = 0; i < 10; i++) {
-            digitalWrite(wheelLeft, HIGH);
-            delay(200);
-            digitalWrite(wheelLeft, LOW);
-            fireFound = (valueLeft > minimumFireValue or valueRight > minimumFireValue or valueFront > minimumFireValue);
-
-            if (fireFound) {
-                break;
-            }
-        }
+        fireFound = (valueLeft > minimumFireValue or valueRight > minimumFireValue or valueFront > minimumFireValue);
 
         if (fireFound) {
             return;
