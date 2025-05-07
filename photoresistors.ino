@@ -23,9 +23,9 @@ int valueLeft;
 int valueFront;
 int valueRight;
 
-float durationSonar;
-float distanceSonar;
-float valueSonar;
+float durationSonar; // Value in microseconds
+float distanceSonar; // Value in centimeters
+float valueSonar; // Value in centimeters
 
 // Initializing conditional booleans
 bool maxDistanceReached; // Checks whether agent is too close to source
@@ -33,18 +33,19 @@ bool frontLargest; // Checks whether front sensor gives highest output
 bool sourceCentered; // Checks whether source is centered between left and right sensors
 bool fireExists; // Speaks for itself
 bool fireFound; // Also
+bool initialRun = 1; // Initial run has some goofy issues, so we skip the entire loop after setting sensor values
 
 // PARAMETERS //
 
-int errorMargin = 40; // Margin that is allowed for source light to be considered centered
+int errorMargin = 100; // Margin that is allowed for source light to be considered centered
 
 int maxDistanceValue = 100; // Maximum value that photoFront can take before stopping wheels
 
 int maxWallDistanceValue = 100; // Maximum value that sonar can take before turning around
 
-int minimumFireValue = 50; // Minimum value that a photoresistor needs before it considers a light to be a fire
+int minimumFireValue = 100; // Minimum value that a photoresistor needs before it considers a light to be a fire
 
-int wheelSpeed = 127; // RANGE: 0 - 255, adjusts motor values
+int wheelSpeed = 60; // RANGE: 0 - 255, adjusts motor values. Values above 75 might make it explode
 
 // END PARAMETERS //
 
@@ -91,6 +92,8 @@ void allBrake() {
 }
 
 float getSonarDistance() {
+    // Since we have a stupid Sonar sensor, we have to do the math ourselves
+    // Code snippets interpreted from https://projecthub.arduino.cc/Isaac100/getting-started-with-the-hc-sr04-ultrasonic-sensor-7cabe1
     digitalWrite(sonarTrig, LOW);
     delayMicroseconds(2);
     digitalWrite(sonarTrig, HIGH);
@@ -111,7 +114,7 @@ void setup() {
     pinMode(photoRight, INPUT);
     
     pinMode(sonarEcho, INPUT);
-    pinMode(sonarTrig, OUTPUT);
+    pinMode(sonarTrig, OUTPUT); // Output because the Sonar module requires a trigger to function. Not technically a sensor, but... deal with it
     
     // Pin declarations for servos
     pinMode(wheelLeftF, OUTPUT);
@@ -122,6 +125,7 @@ void setup() {
     pinMode(sprayServo, OUTPUT);
     
     spray.attach(sprayServo);
+    spray.write(0);
     
     Serial.begin(9600); // Don't change this, it messes with the output console
 }
@@ -140,14 +144,22 @@ void loop() {
 
     Serial.println(valueSonar);
 
-    maxDistanceReached = (valueFront < maxDistanceValue);
+    // The values don't update nicely in the first run, so we skip that one
+  	if (initialRun) {
+      	initialRun = 0;
+    	return;
+  	}
+  
+    // Evaluate all the booleans
+    maxDistanceReached = (valueFront > maxDistanceValue);
     frontLargest = (valueFront > valueLeft and valueFront > valueRight);
-    sourceCentered = (abs(valueLeft - valueRight) < errorMargin);
-    fireExists = (valueSonar > maxWallDistanceValue and valueFront > minimumFireValue);
+    sourceCentered = ((abs(valueLeft - valueRight) < errorMargin) and not (valueFront == valueLeft and valueFront == valueRight));
+    fireExists = ((valueSonar < maxWallDistanceValue) and (valueFront > minimumFireValue));
 
-    // Extinguisher, if fire exists will loop
+    // Extinguisher, if conditions are met, it loops the main loop up until this function until the fire is gone
     if (maxDistanceReached and fireExists) {
         Serial.println("Extinguishing Fire");
+      	allStop();
         spray.write(90);
         delay(1000);
         spray.write(0);
@@ -198,10 +210,10 @@ void loop() {
     while (not fireFound) {
         Serial.println("Searching loop running");
         allStop();
-
         turnLeft();
 
         delay(200);
+        allStop();
 
         // Check new values
         valueLeft = analogRead(photoLeft);
@@ -210,9 +222,8 @@ void loop() {
 
         fireFound = (valueLeft > minimumFireValue or valueRight > minimumFireValue or valueFront > minimumFireValue);
 
-        Serial.println(fireFound);
-
         if (fireFound) {
+            Serial.println("Fire found!");
             return;
         } else {
             Serial.println("No fire found, restarting loop");
