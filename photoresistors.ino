@@ -194,18 +194,27 @@ void loop() {
 
     // Searching loop: only gets executed if all other checks fail, therefore means only searches if no fire that satisfies the conditions is found
     while (not fireFound) {
-        Serial.println("Searching loop running")
+        Serial.println("Searching loop running");
         allStop();
 
         turnLeft();
 
         delay(200);
 
+        valueLeft = analogRead(photoLeft);
+        valueFront = analogRead(photoFront);
+        valueRight = analogRead(photoRight);
+
         fireFound = (valueLeft > minimumFireValue or valueRight > minimumFireValue or valueFront > minimumFireValue);
+
+        Serial.println(fireFound);
 
         if (fireFound) {
             return;
+        } else {
+            Serial.println("No fire found, restarting loop");
         }
+
     }
     // End search loop
 }
