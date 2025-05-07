@@ -136,6 +136,8 @@ void loop() {
     
     valueSonar = getSonarDistance();
 
+    Serial.println(valueSonar);
+
     maxDistanceReached = (valueFront < maxDistanceValue);
     frontLargest = (valueFront > valueLeft and valueFront > valueRight);
     sourceCentered = (abs(valueLeft - valueRight) < errorMargin);
@@ -143,7 +145,7 @@ void loop() {
 
     // Extinguisher, if fire exists will loop
     if (maxDistanceReached and fireExists) {
-        Serial.println("");
+        Serial.println("Extinguishing Fire");
         spray.write(90);
         delay(1000);
         spray.write(0);
@@ -155,6 +157,7 @@ void loop() {
 
     // Pathfinding code
     if (fireFound and not maxDistanceReached and not sourceCentered) {
+        Serial.println("Pathfinding code running");
         while (valueLeft > valueFront) {
             turnLeft();
             delay(200);
@@ -174,7 +177,9 @@ void loop() {
 
     if (not maxDistanceReached) {
         if (sourceCentered and frontLargest) {
-
+            forwardDrive();
+            delay(200);
+            allStop();
         } else if (valueLeft > valueRight) {
             turnLeft();
             delay(200);
@@ -189,6 +194,7 @@ void loop() {
 
     // Searching loop: only gets executed if all other checks fail, therefore means only searches if no fire that satisfies the conditions is found
     while (not fireFound) {
+        Serial.println("Searching loop running")
         allStop();
 
         turnLeft();
