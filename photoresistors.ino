@@ -47,6 +47,8 @@ int minimumFireValue = 100; // Minimum value that a photoresistor needs before i
 
 int wheelSpeed = 60; // RANGE: 0 - 255, adjusts motor values. Values above 75 might make it explode
 
+bool elonMode = 0; // Don't mind this
+
 // END PARAMETERS //
 
 void turnLeft() {
@@ -128,6 +130,19 @@ void setup() {
     spray.write(0);
     
     Serial.begin(9600); // Don't change this, it messes with the output console
+
+    if (elonMode) {
+        // Puts itself into a situation where it shouldn't be, hallucinates a problem, declares it solved the problem, then does nothing until you forcefully kill the process
+        forwardDrive();
+        delay(500);
+        allStop();
+
+        fireExists = 1;
+        Serial.println("I extinguished the fire!");
+        while (1) {
+            delay(1000);
+        }
+    }
 }
 
 void loop() {
