@@ -9,12 +9,12 @@ const int photoRight = A2;
 const int sonarTrig = 8;
 const int sonarEcho = 9;
 
-int wheelLeftF = 7;
-int wheelLeftR = 6;
-int wheelRightF = 5;
-int wheelRightR = 4;
+int wheelLeftF = 11;
+int wheelLeftR = 10;
+int wheelRightF = 6;
+int wheelRightR = 5;
 
-int sprayServo = 11;
+int sprayServo = 13;
 
 Servo spray;
 
@@ -44,48 +44,50 @@ int maxWallDistanceValue = 100; // Maximum value that sonar can take before turn
 
 int minimumFireValue = 50; // Minimum value that a photoresistor needs before it considers a light to be a fire
 
+int wheelSpeed = 127; // RANGE: 0 - 255, adjusts motor values
+
 // END PARAMETERS //
 
 void turnLeft() {
-    digitalWrite(wheelLeftF, LOW);
-    digitalWrite(wheelLeftR, HIGH);
-    digitalWrite(wheelRightR, LOW);
-    digitalWrite(wheelRightF, HIGH);
+    analogWrite(wheelLeftF, 0);
+    analogWrite(wheelLeftR, wheelSpeed);
+    analogWrite(wheelRightF, wheelSpeed);
+    analogWrite(wheelRightR, 0);
 }
 
 void turnRight() {
-    digitalWrite(wheelLeftF, HIGH);
-    digitalWrite(wheelLeftR, LOW);
-    digitalWrite(wheelRightR, HIGH);
-    digitalWrite(wheelRightF, LOW);
+    analogWrite(wheelLeftF, wheelSpeed);
+    analogWrite(wheelLeftR, 0);
+    analogWrite(wheelRightF, 0);
+    analogWrite(wheelRightR, wheelSpeed);
 }
 
 void forwardDrive() {
-    digitalWrite(wheelLeftF, HIGH);
-    digitalWrite(wheelRightF, HIGH);
-    digitalWrite(wheelLeftR, LOW);
-    digitalWrite(wheelRightR, LOW);
+    analogWrite(wheelLeftF, wheelSpeed);
+    analogWrite(wheelLeftR, 0);
+    analogWrite(wheelRightF, wheelSpeed);
+    analogWrite(wheelRightR, 0);
 }
 
 void reverseDrive() {
-    digitalWrite(wheelLeftF, LOW);
-    digitalWrite(wheelRightF, LOW);
-    digitalWrite(wheelLeftR, HIGH);
-    digitalWrite(wheelRightR, HIGH);
+    analogWrite(wheelLeftF, 0);
+    analogWrite(wheelLeftR, wheelSpeed);
+    analogWrite(wheelRightF, 0);
+    analogWrite(wheelRightR, wheelSpeed);
 }
 
 void allStop() {
-    digitalWrite(wheelLeftF, LOW);
-    digitalWrite(wheelRightF, LOW);
-    digitalWrite(wheelLeftR, LOW);
-    digitalWrite(wheelRightR, LOW);
+    analogWrite(wheelLeftF, 0);
+    analogWrite(wheelLeftR, 0);
+    analogWrite(wheelRightF, 0);
+    analogWrite(wheelRightR, 0);
 }
 
 void allBrake() {
-    digitalWrite(wheelLeftF, HIGH);
-    digitalWrite(wheelRightF, HIGH);
-    digitalWrite(wheelLeftR, HIGH);
-    digitalWrite(wheelRightR, HIGH);
+    analogWrite(wheelLeftF, wheelSpeed);
+    analogWrite(wheelLeftR, wheelSpeed);
+    analogWrite(wheelRightF, wheelSpeed);
+    analogWrite(wheelRightR, wheelSpeed);
 }
 
 float getSonarDistance() {
@@ -201,6 +203,7 @@ void loop() {
 
         delay(200);
 
+        // Check new values
         valueLeft = analogRead(photoLeft);
         valueFront = analogRead(photoFront);
         valueRight = analogRead(photoRight);
