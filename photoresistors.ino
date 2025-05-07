@@ -6,7 +6,8 @@ const int photoLeft = A0;
 const int photoFront = A1;
 const int photoRight = A2;
 
-const int sonar = A3;
+const int sonarTrig = 8;
+const int sonarEcho = 9;
 
 int wheelLeftF = 7;
 int wheelLeftR = 6;
@@ -22,7 +23,9 @@ int valueLeft;
 int valueFront;
 int valueRight;
 
-int valueSonar;
+float durationSonar;
+float distanceSonar;
+float valueSonar;
 
 // Initializing conditional booleans
 bool maxDistanceReached; // Checks whether agent is too close to source
@@ -85,13 +88,28 @@ void allBrake() {
     digitalWrite(wheelRightR, HIGH);
 }
 
+float getSonarDistance() {
+    digitalWrite(sonarTrig, LOW);
+    delayMicroseconds(2);
+    digitalWrite(sonarTrig, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(sonarTrig, LOW);
+
+    durationSonar = pulseIn(sonarEcho, HIGH);
+
+    distanceSonar = (durationSonar * 0.0343) / 2;
+
+    return distanceSonar;
+}
+
 void setup() {
     // Pin declarations for sensors
     pinMode(photoLeft, INPUT);
     pinMode(photoFront, INPUT);
     pinMode(photoRight, INPUT);
     
-    pinMode(sonar, INPUT);
+    pinMode(sonarEcho, INPUT);
+    pinMode(sonarTrig, OUTPUT);
     
     // Pin declarations for servos
     pinMode(wheelLeftF, OUTPUT);
@@ -116,7 +134,7 @@ void loop() {
     Serial.println(valueFront);
     Serial.println(valueRight);
     
-    valueSonar = analogRead(sonar);
+    valueSonar = getSonarDistance();
 
     maxDistanceReached = (valueFront < maxDistanceValue);
     frontLargest = (valueFront > valueLeft and valueFront > valueRight);
@@ -125,6 +143,7 @@ void loop() {
 
     // Extinguisher, if fire exists will loop
     if (maxDistanceReached and fireExists) {
+        Serial.println("");
         spray.write(90);
         delay(1000);
         spray.write(0);
