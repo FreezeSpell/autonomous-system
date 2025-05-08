@@ -117,13 +117,15 @@ void setup() {
     // Pin declarations for servos
     pinMode(wheelLeftF, OUTPUT);
     pinMode(wheelLeftR, OUTPUT);
+    pinMode(wheelLeftEN, OUTPUT);
     pinMode(wheelRightF, OUTPUT);
     pinMode(wheelRightR, OUTPUT);
+    pinMode(wheelRightEN, OUTPUT);
     
-    pinMode(sprayServo, OUTPUT);
-    
-    spray.attach(sprayServo);
-    spray.write(0);
+    pinMode(blueLed, OUTPUT);
+    pinMode(redLed, OUTPUT);
+
+    pinMode(alarm, OUTPUT);
     
     Serial.begin(9600); // Don't change this, it messes with the output console
 
