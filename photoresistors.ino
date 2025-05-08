@@ -237,6 +237,8 @@ void loop() {
     if (fireFound and not maxDistanceReached and not sourceCentered) {
         Serial.println("Pathfinding code running");
         while (valueLeft > valueFront) {
+            allStop();
+            delayMicroseconds(2);
             turnLeft();
             delay(200);
             allStop();
@@ -245,6 +247,8 @@ void loop() {
         }
 
         while (valueRight > valueFront) {
+            allStop();
+            delayMicroseconds(2);
             turnRight();
             delay(200);
             allStop();
@@ -255,14 +259,20 @@ void loop() {
 
     if (not maxDistanceReached) {
         if (sourceCentered and frontLargest) {
+            allStop();
+            delayMicroseconds(2);
             forwardDrive();
             delay(200);
             allStop();
         } else if (valueLeft > valueRight) {
+            allStop();
+            delayMicroseconds(2);
             turnLeft();
             delay(200);
             allStop();
         } else if (valueRight > valueLeft) {
+            allStop();
+            delayMicroseconds(2);
             turnRight();
             delay(200);
             allStop();
