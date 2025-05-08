@@ -22,9 +22,9 @@ int blueLed = 11;
 int redLed = 12;
 
 // Initializing sensor values
-int valueLeft;
-int valueFront;
-int valueRight;
+float valueLeft;
+float valueFront;
+float valueRight;
 
 float durationSonar; // Value in microseconds
 float distanceSonar; // Value in centimeters
@@ -42,13 +42,13 @@ bool initialRun = 1; // Initial run has some goofy issues, so we skip the entire
 
 int errorMargin = 100; // Margin that is allowed for source light to be considered centered
 
-int maxDistanceValue = 100; // Maximum value that photoFront can take before stopping wheels
+int maxFireValue = 320; // Maximum value that photoFront can take before stopping wheels
 
 int maxWallDistanceValue = 100; // Maximum value that sonar can take before turning around
 
-int minimumFireValue = 500; // Minimum value that a photoresistor needs before it considers a light to be a fire
+int minimumFireValue = 160; // Minimum value that a photoresistor needs before it considers a light to be a fire
 
-int wheelSpeed = 30; // RANGE: 0 - 255, adjusts motor values. Values above 75 might make it explode
+int wheelSpeed = 85; // RANGE: 0 - 255, adjusts motor values. Values above 75 might make it explode
 
 bool elonMode = 0; // Don't mind this
 
@@ -211,7 +211,7 @@ void loop() {
     
     valueSonar = getSonarDistance();
 
-    Serial.println(valueSonar);
+    // Serial.println(valueSonar);
 
     // The values don't update nicely in the first run, so we skip that one
   	if (initialRun) {
@@ -220,7 +220,7 @@ void loop() {
   	}
   
     // Evaluate all the booleans
-    maxDistanceReached = (valueFront > maxDistanceValue);
+    maxDistanceReached = (valueFront > maxFireValue);
     frontLargest = (valueFront > valueLeft and valueFront > valueRight);
     sourceCentered = ((abs(valueLeft - valueRight) < errorMargin) and not (valueFront == valueLeft and valueFront == valueRight));
     fireExists = ((valueSonar < maxWallDistanceValue) and (valueFront > minimumFireValue));
@@ -230,6 +230,9 @@ void loop() {
         Serial.println("Alarming Fire");
       	allStop();
         runAlarm(5);
+        fireFound = 0;
+        fireExists = 0;
+        initialRun = 1;
         return;
     }
     // End alarm
@@ -292,6 +295,10 @@ void loop() {
         allStop();
 
         // Check new values
+        valueLeft = analogRead(photoLeft);
+        valueFront = analogRead(photoFront);
+        valueRight = analogRead(photoRight);
+
         valueLeft = analogRead(photoLeft);
         valueFront = analogRead(photoFront);
         valueRight = analogRead(photoRight);
