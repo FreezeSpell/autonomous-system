@@ -105,6 +105,22 @@ float getSonarDistance() {
     return distanceSonar;
 }
 
+void runAlarm(int loops) {
+    for (int i = 0; i < loops; i++) {
+        digitalWrite(blueLed, HIGH);
+        analogWrite(alarm, 127);
+        delay(500);
+        digitalWrite(blueLed, LOW);
+        digitalWrite(redLed, HIGH);
+        analogWrite(alarm, 255);
+        delay(500);
+        digitalWrite(redLed, LOW);
+    }
+    digitalWrite(redLed, LOW);
+    digitalWrite(blueLed, LOW);
+    analogWrite(alarm, 0);
+}
+
 void setup() {
     // Pin declarations for sensors
     pinMode(photoLeft, INPUT);
@@ -169,17 +185,14 @@ void loop() {
     sourceCentered = ((abs(valueLeft - valueRight) < errorMargin) and not (valueFront == valueLeft and valueFront == valueRight));
     fireExists = ((valueSonar < maxWallDistanceValue) and (valueFront > minimumFireValue));
 
-    // Extinguisher, if conditions are met, it loops the main loop up until this function until the fire is gone
+    // Alarm, if conditions are met is looped
     if (maxDistanceReached and fireExists) {
-        Serial.println("Extinguishing Fire");
+        Serial.println("Alarming Fire");
       	allStop();
-        spray.write(90);
-        delay(1000);
-        spray.write(0);
-        delay(800);
+        runAlarm(25);
         return;
     }
-    // End extinguisher
+    // End alarm
 
 
     // Pathfinding code
