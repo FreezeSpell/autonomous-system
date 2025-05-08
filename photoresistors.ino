@@ -163,28 +163,34 @@ void setup() {
     }
     delay(1000);
     digitalWrite(blueLed, HIGH);
-    delayMicroseconds(500);
+    delayMicroseconds(5000);
     digitalWrite(blueLed, LOW);
     delay(1000);
     digitalWrite(blueLed, HIGH);
-    delayMicroseconds(500);
+    delayMicroseconds(5000);
     digitalWrite(blueLed, LOW);
     delay(1000);
     digitalWrite(blueLed, HIGH);
-    delayMicroseconds(500);
+    analogWrite(alarm, 127);
+    delayMicroseconds(5000);
     digitalWrite(blueLed, LOW);
-    delay(1000);
-    digitalWrite(redLed, HIGH);
-    digitalWrite(blueLed, HIGH);
-    delayMicroseconds(500);
-    digitalWrite(redLed, LOW);
-    digitalWrite(blueLed, LOW);
+    analogWrite(alarm, 0);
     delay(1000);
     digitalWrite(redLed, HIGH);
     digitalWrite(blueLed, HIGH);
-    delayMicroseconds(500);
+    analogWrite(alarm, 127);
+    delayMicroseconds(5000);
     digitalWrite(redLed, LOW);
     digitalWrite(blueLed, LOW);
+    analogWrite(alarm, 0);
+    delay(1000);
+    digitalWrite(redLed, HIGH);
+    digitalWrite(blueLed, HIGH);
+    analogWrite(alarm, 127);
+    delayMicroseconds(5000);
+    digitalWrite(redLed, LOW);
+    digitalWrite(blueLed, LOW);
+    analogWrite(alarm, 0);
     delay(1000);
 }
 
