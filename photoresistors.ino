@@ -46,9 +46,9 @@ int maxDistanceValue = 100; // Maximum value that photoFront can take before sto
 
 int maxWallDistanceValue = 100; // Maximum value that sonar can take before turning around
 
-int minimumFireValue = 100; // Minimum value that a photoresistor needs before it considers a light to be a fire
+int minimumFireValue = 500; // Minimum value that a photoresistor needs before it considers a light to be a fire
 
-int wheelSpeed = 60; // RANGE: 0 - 255, adjusts motor values. Values above 75 might make it explode
+int wheelSpeed = 30; // RANGE: 0 - 255, adjusts motor values. Values above 75 might make it explode
 
 bool elonMode = 0; // Don't mind this
 
@@ -59,6 +59,7 @@ void turnLeft() {
   	digitalWrite(wheelLeftR, HIGH);
   	analogWrite(wheelLeftEN, wheelSpeed);
   	analogWrite(wheelRightEN, wheelSpeed);
+    digitalWrite(redLed, HIGH);
 }
 
 void turnRight() {
@@ -66,6 +67,7 @@ void turnRight() {
   	digitalWrite(wheelLeftF, HIGH);
   	analogWrite(wheelLeftEN, wheelSpeed);
   	analogWrite(wheelRightEN, wheelSpeed);
+    digitalWrite(blueLed, HIGH);
 }
 
 void forwardDrive() {
@@ -73,6 +75,8 @@ void forwardDrive() {
   	digitalWrite(wheelLeftF, HIGH);
   	analogWrite(wheelLeftEN, wheelSpeed);
   	analogWrite(wheelRightEN, wheelSpeed);
+    digitalWrite(blueLed, HIGH);
+    digitalWrite(redLed, HIGH);
 }
 
 void reverseDrive() {
@@ -157,6 +161,31 @@ void setup() {
             delay(1000);
         }
     }
+    delay(1000);
+    digitalWrite(blueLed, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(blueLed, LOW);
+    delay(1000);
+    digitalWrite(blueLed, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(blueLed, LOW);
+    delay(1000);
+    digitalWrite(blueLed, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(blueLed, LOW);
+    delay(1000);
+    digitalWrite(redLed, HIGH);
+    digitalWrite(blueLed, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(redLed, LOW);
+    digitalWrite(blueLed, LOW);
+    delay(1000);
+    digitalWrite(redLed, HIGH);
+    digitalWrite(blueLed, HIGH);
+    delayMicroseconds(500);
+    digitalWrite(redLed, LOW);
+    digitalWrite(blueLed, LOW);
+    delay(1000);
 }
 
 void loop() {
@@ -164,6 +193,9 @@ void loop() {
     valueLeft = analogRead(photoLeft);
     valueFront = analogRead(photoFront);
     valueRight = analogRead(photoRight);
+
+    digitalWrite(blueLed, LOW);
+    digitalWrite(redLed, LOW);
     
     Serial.println(valueLeft);
     Serial.println(valueFront);
@@ -257,4 +289,5 @@ void loop() {
 
     }
     // End search loop
+    delay(500);
 }
