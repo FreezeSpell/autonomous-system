@@ -87,8 +87,10 @@ void reverseDrive() {
 }
 
 void allStop() {
-    digitalWrite(wheelRightF, HIGH);
-  	digitalWrite(wheelLeftR, HIGH);
+    digitalWrite(wheelRightF, LOW);
+  	digitalWrite(wheelLeftR, LOW);
+    digitalWrite(wheelLeftF, LOW);
+    digitalWrite(wheelRightR, LOW);
   	analogWrite(wheelLeftEN, 0);
   	analogWrite(wheelRightEN, 0);
 }
@@ -227,7 +229,7 @@ void loop() {
     if (maxDistanceReached and fireExists) {
         Serial.println("Alarming Fire");
       	allStop();
-        runAlarm(25);
+        runAlarm(5);
         return;
     }
     // End alarm
