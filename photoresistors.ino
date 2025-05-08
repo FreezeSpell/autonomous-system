@@ -9,14 +9,17 @@ const int photoRight = A2;
 const int sonarTrig = 8;
 const int sonarEcho = 9;
 
-int wheelLeftF = 11;
-int wheelLeftR = 10;
-int wheelRightF = 6;
-int wheelRightR = 5;
+int wheelLeftF = 2;
+int wheelLeftR = 4;
+int wheelLeftEN = 3;
+int wheelRightF = 7;
+int wheelRightR = 6;
+int wheelRightEN = 5;
 
-int sprayServo = 13;
+int alarm = 10;
 
-Servo spray;
+int blueLed = 11;
+int redLed = 12;
 
 // Initializing sensor values
 int valueLeft;
