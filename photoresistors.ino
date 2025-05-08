@@ -52,45 +52,38 @@ bool elonMode = 0; // Don't mind this
 // END PARAMETERS //
 
 void turnLeft() {
-    analogWrite(wheelLeftF, 0);
-    analogWrite(wheelLeftR, wheelSpeed);
-    analogWrite(wheelRightF, wheelSpeed);
-    analogWrite(wheelRightR, 0);
+  	digitalWrite(wheelRightF, HIGH);
+  	digitalWrite(wheelLeftR, HIGH);
+  	analogWrite(wheelLeftEN, wheelSpeed);
+  	analogWrite(wheelRightEN, wheelSpeed);
 }
 
 void turnRight() {
-    analogWrite(wheelLeftF, wheelSpeed);
-    analogWrite(wheelLeftR, 0);
-    analogWrite(wheelRightF, 0);
-    analogWrite(wheelRightR, wheelSpeed);
+    digitalWrite(wheelRightR, HIGH);
+  	digitalWrite(wheelLeftF, HIGH);
+  	analogWrite(wheelLeftEN, wheelSpeed);
+  	analogWrite(wheelRightEN, wheelSpeed);
 }
 
 void forwardDrive() {
-    analogWrite(wheelLeftF, wheelSpeed);
-    analogWrite(wheelLeftR, 0);
-    analogWrite(wheelRightF, wheelSpeed);
-    analogWrite(wheelRightR, 0);
+    digitalWrite(wheelRightF, HIGH);
+  	digitalWrite(wheelLeftF, HIGH);
+  	analogWrite(wheelLeftEN, wheelSpeed);
+  	analogWrite(wheelRightEN, wheelSpeed);
 }
 
 void reverseDrive() {
-    analogWrite(wheelLeftF, 0);
-    analogWrite(wheelLeftR, wheelSpeed);
-    analogWrite(wheelRightF, 0);
-    analogWrite(wheelRightR, wheelSpeed);
+    digitalWrite(wheelRightR, HIGH);
+  	digitalWrite(wheelLeftR, HIGH);
+  	analogWrite(wheelLeftEN, wheelSpeed);
+  	analogWrite(wheelRightEN, wheelSpeed);
 }
 
 void allStop() {
-    analogWrite(wheelLeftF, 0);
-    analogWrite(wheelLeftR, 0);
-    analogWrite(wheelRightF, 0);
-    analogWrite(wheelRightR, 0);
-}
-
-void allBrake() {
-    analogWrite(wheelLeftF, wheelSpeed);
-    analogWrite(wheelLeftR, wheelSpeed);
-    analogWrite(wheelRightF, wheelSpeed);
-    analogWrite(wheelRightR, wheelSpeed);
+    digitalWrite(wheelRightF, HIGH);
+  	digitalWrite(wheelLeftR, HIGH);
+  	analogWrite(wheelLeftEN, 0);
+  	analogWrite(wheelRightEN, 0);
 }
 
 float getSonarDistance() {
