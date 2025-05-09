@@ -1,6 +1,3 @@
-#include <Servo.h>
-
-
 // Giving all used pins a friendly name
 const int photoLeft = A0;
 const int photoFront = A1;
@@ -95,22 +92,6 @@ void allStop() {
   	analogWrite(wheelRightEN, 0);
 }
 
-float getSonarDistance() {
-    // Since we have a stupid Sonar sensor, we have to do the math ourselves
-    // Code snippets interpreted from https://projecthub.arduino.cc/Isaac100/getting-started-with-the-hc-sr04-ultrasonic-sensor-7cabe1
-    digitalWrite(sonarTrig, LOW);
-    delayMicroseconds(2);
-    digitalWrite(sonarTrig, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(sonarTrig, LOW);
-
-    durationSonar = pulseIn(sonarEcho, HIGH);
-
-    distanceSonar = (durationSonar * 0.0343) / 2;
-
-    return distanceSonar;
-}
-
 void runAlarm(int loops) {
     for (int i = 0; i < loops; i++) {
         digitalWrite(blueLed, HIGH);
@@ -163,6 +144,9 @@ void setup() {
             delay(1000);
         }
     }
+
+    // Countdown before main loop starts, so it doesn't immediately run off when uploading code
+    // Yes, it's repetitive and ugly
     delay(1000);
     digitalWrite(blueLed, HIGH);
     delayMicroseconds(5000);
@@ -208,10 +192,6 @@ void loop() {
     Serial.println(valueLeft);
     Serial.println(valueFront);
     Serial.println(valueRight);
-    
-    valueSonar = getSonarDistance();
-
-    // Serial.println(valueSonar);
 
     // The values don't update nicely in the first run, so we skip that one
   	if (initialRun) {
@@ -221,9 +201,14 @@ void loop() {
   
     // Evaluate all the booleans
     maxDistanceReached = (valueFront > maxFireValue);
-    frontLargest = (valueFront > valueLeft and valueFront > valueRight);
-    sourceCentered = ((abs(valueLeft - valueRight) < errorMargin) and not (valueFront == valueLeft and valueFront == valueRight));
-    fireExists = ((valueSonar < maxWallDistanceValue) and (valueFront > minimumFireValue));
+
+    frontLargest =      (valueFront > valueLeft 
+                        and valueFront > valueRight);
+
+    sourceCentered =    ((abs(valueLeft - valueRight) < errorMargin) 
+                        and not (valueFront == valueLeft and valueFront == valueRight));
+
+    fireExists = (valueFront > minimumFireValue);
 
     // Alarm, if conditions are met is looped
     if (maxDistanceReached and fireExists) {
